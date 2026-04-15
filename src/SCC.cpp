@@ -118,6 +118,46 @@ Time Complexity:
     O(V + E)
 */
 
+void Graph::dfsBridgeArt(
+    int u,
+    int parent,
+    std::vector<int>& disc,
+    std::vector<int>& low,
+    std::vector<bool>& ap,
+    std::vector<std::pair<int,int>>& bridges,
+    int& timer
+) {
+    disc[u] = low[u] = timer++;
+    int children = 0;
+
+    for (auto [v, w] : adj[u]) {
+        if (disc[v] == -1) {
+            children++;
+            dfsBridgeArt(v, u, disc, low, ap, bridges, timer);
+
+            low[u] = std::min(low[u], low[v]);
+
+            // Bridge condition
+            if (low[v] > disc[u]) {
+                bridges.push_back({u, v});
+            }
+
+            // Articulation point condition
+            if (parent != -1 && low[v] >= disc[u]) {
+                ap[u] = true;
+            }
+        }
+        else if (v != parent) {
+            low[u] = std::min(low[u], disc[v]);
+        }
+    }
+
+    // Root case
+    if (parent == -1 && children > 1) {
+        ap[u] = true;
+    }
+}
+
 pair<vector<pair<int,int>>, vector<int>> Graph::findBridgesArt()
 {
     if (directed)
