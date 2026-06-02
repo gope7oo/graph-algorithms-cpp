@@ -330,3 +330,87 @@ bool Graph::checkMapping(vector<int>& mapping, Graph& other)
     }
     return true;
 }
+
+
+// ====================== Planarity Test (Approximation) ======================
+/*
+Theory:
+A graph is planar if it can be drawn on a plane without edge crossings.
+
+This algo does NOT fully detect planarity
+It only says:
+“graph is likely planar / not obviously non-planar”
+
+Exact planarity testing is complex (Hopcroft–Tarjan algorithm).
+Here we use necessary conditions (fast rejection rules).
+
+For a simple connected undirected graph:
+    E ≤ 3V - 6  (general case)
+
+For bipartite graphs:
+    E ≤ 2V - 4
+
+These are NOT sufficient conditions, only filters.
+*/
+
+bool Graph::isPlanar()
+{
+    if (directed)
+    {
+        std::cerr << "Planarity check assumes undirected graph.\n";
+        return false;
+    }
+
+    if (V <= 4)
+        return true; // K1–K4 are planar
+
+    // count edges
+    int E = 0;
+    for (int i = 0; i < V; i++)
+        E += adj[i].size();
+
+    E /= 2; // undirected graph
+
+    // Quick necessary condition
+    if (E > 3 * V - 6)
+        return false;
+
+    // Optional: check if bipartite (then stronger rule applies)
+    std::vector<int> color(V, -1);
+
+    for (int i = 0; i < V; i++)
+    {
+        if (color[i] != -1) continue;
+
+        std::queue<int> q;
+        q.push(i);
+        color[i] = 0;
+
+        while (!q.empty())
+        {
+            int u = q.front();
+            q.pop();
+
+            for (auto [v, w] : adj[u])
+            {
+                if (color[v] == -1)
+                {
+                    color[v] = color[u] ^ 1;
+                    q.push(v);
+                }
+                else if (color[v] == color[u])
+                {
+                    goto not_bipartite;
+                }
+            }
+        }
+    }
+
+    // bipartite graph check
+    if (E > 2 * V - 4)
+        return false;
+
+not_bipartite:
+
+    return true; // passes necessary conditions
+}

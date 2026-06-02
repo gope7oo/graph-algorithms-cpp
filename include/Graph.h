@@ -123,6 +123,8 @@ public:
     bool isIsomorphicUtil(int pos, vector<int>& mapping, vector<bool>& used, Graph& other);
     bool checkMapping(vector<int>& mapping, Graph& other);
 
+    bool isPlanar();
+
     // Traversal
     void bfs(int start);
     void DFS(int start);
