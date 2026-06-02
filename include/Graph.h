@@ -143,6 +143,9 @@ public:
     vector<long long> dijkstra(int src);
     vector<long long> bellmanFord(int src);
     vector<vector<long long>> floydWarshall();
+    vector<int> aStar(int start, int goal);
+    long long aStarCost(int start, int goal);
+    long long heuristic(int u, int goal);
 
     // MST
     long long kruskalMST();

@@ -126,3 +126,144 @@ vector<vector<long long>> Graph::floydWarshall(){
 
     return dist;
 }
+
+
+
+
+/*
+
+====================== A* Algorithm ======================
+
+A* (A-star) is a best-first search algorithm used to find the
+shortest path between a start node and a goal node in a weighted graph.
+
+It improves over Dijkstra by using a heuristic to guide the search.
+
+Core idea:
+    f(n) = g(n) + h(n)
+
+Where:
+- g(n): exact cost from the start node to current node n
+- h(n): estimated cost from node n to the goal (heuristic)
+- f(n): estimated total cost of the cheapest solution through n
+
+------------------------------------------------------------
+How it works:
+- Always expands the node with the lowest f(n) value.
+- Uses a priority queue to select the most promising node.
+- Continuously updates the best known cost to each node.
+
+------------------------------------------------------------
+Optimality condition:
+A* is guaranteed to find the optimal (shortest) path if the
+heuristic h(n) is admissible, meaning:
+    - It never overestimates the true cost to the goal.
+
+If h(n) = 0:
+    → A* becomes Dijkstra’s algorithm.
+
+------------------------------------------------------------
+Advantages:
+- Faster than Dijkstra in practice (guided search)
+- Finds optimal path with a good heuristic
+
+Disadvantages:
+- Performance depends heavily on heuristic quality
+- Can behave like Dijkstra if heuristic is weak
+*/
+
+std::vector<int> Graph::aStar(int start, int goal)
+{
+    if (start < 0 || start >= V || goal < 0 || goal >= V) {
+        std::cerr << "Error: Invalid start or goal vertex.\n";
+        return {};
+    }
+
+    // gCost = cost from start to current node
+    std::vector<long long> gCost(V, LLONG_MAX);
+    std::vector<int> parent(V, -1);
+    std::vector<bool> closed(V, false);
+
+    // Priority queue: {fCost, vertex}
+    using pii = std::pair<long long, int>;
+    std::priority_queue<pii, std::vector<pii>, std::greater<pii>> pq;
+
+    gCost[start] = 0;
+    pq.push({0 + heuristic(start, goal), start});
+
+    while (!pq.empty())
+    {
+        int u = pq.top().second;
+        pq.pop();
+
+        if (closed[u]) continue;
+        closed[u] = true;
+
+        if (u == goal) {
+            // Reconstruct and return path
+            std::vector<int> path;
+            int curr = goal;
+            while (curr != -1) {
+                path.push_back(curr);
+                curr = parent[curr];
+            }
+            std::reverse(path.begin(), path.end());
+
+            if (!path.empty() && path[0] == start)
+                return path;
+            else
+                return {};
+        }
+
+        for (auto& edge : adj[u])
+        {
+            int v = edge.first;
+            long long weight = edge.second;
+
+            if (closed[v]) continue;
+
+            long long tentativeG = gCost[u] + weight;
+
+            if (tentativeG < gCost[v])
+            {
+                gCost[v] = tentativeG;
+                parent[v] = u;
+
+                long long fCost = tentativeG + heuristic(v, goal);
+                pq.push({fCost, v});
+            }
+        }
+    }
+
+    return {}; // No path found
+}
+
+long long Graph::aStarCost(int start, int goal)
+{
+    std::vector<int> path = aStar(start, goal);
+    if (path.empty() || path.size() == 1) return -1;
+
+    long long totalCost = 0;
+
+    for (size_t i = 0; i + 1 < path.size(); i++)
+    {
+        int u = path[i];
+        int v = path[i + 1];
+
+        for (auto& edge : adj[u])
+        {
+            if (edge.first == v)
+            {
+                totalCost += edge.second;
+                break;
+            }
+        }
+    }
+    return totalCost;
+}
+
+// Simple heuristic (can be improved later)
+long long Graph::heuristic(int u, int goal)
+{
+    return 0;   // Default: makes A* same as Dijkstra
+}
