@@ -118,6 +118,9 @@ public:
     void bfs(int start);
     void DFS(int start);
     void DFSRecursive(int start);
+    int isEulerian();
+    bool isSemiEulerian();
+    int isEulerianDirected(); 
 
     // Connectivity
     int connectedComponents();
