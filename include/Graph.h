@@ -123,7 +123,7 @@ public:
     int isEulerianDirected(); 
 
     // Connectivity
-    int connectedComponents();
+    int connectedComponents(bool ignoreIsolated);
     bool hasCycleUndirected();
     bool hasCycleDirected(); 
     bool dfsCycleUtil(int, vector<int>& visited, vector<int>& recStack);

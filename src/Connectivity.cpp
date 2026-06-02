@@ -16,31 +16,57 @@ Time Complexity:
     O(V + E)
 */
 
-int Graph::connectedComponents(){
+int Graph::connectedComponents(bool ignoreIsolated)
+{
+    // visited[i] = whether vertex i has been explored in BFS
+    vector<bool> visited(V, false);
 
-    vector<bool> visited(V,false);
+    int cnt = 0; // number of connected components
 
-    int cnt=0;
+    for (int i = 0; i < V; i++)
+    {
+        /*
+            If ignoreIsolated == true:
+            --------------------------------
+            We skip vertices that have no edges (degree 0 / adj list empty).
 
-    for(int i=0;i<V;i++){
+            WHY?
+            - In Eulerian problems, isolated vertices do NOT matter.
+            - A vertex with no edges does not affect Eulerian path/circuit.
+            - We only care about the "active part" of the graph.
 
-        if(!visited[i]){
+            Example:
+                0 -- 1 -- 2    3    4
+            Vertices 3 and 4 are isolated.
+            They should NOT increase component count in Eulerian logic.
+        */
+        if (ignoreIsolated && adj[i].empty())
+            continue;
 
-            cnt++;
+        /*
+            If we reach here, vertex i is either:
+            - not visited yet, AND
+            - (if ignoreIsolated = true) it is not isolated
+        */
+        if (!visited[i])
+        {
+            cnt++; // new component found
 
             queue<int> q;
             q.push(i);
-            visited[i]=true;
+            visited[i] = true;
 
-            while(!q.empty()){
-
-                int u=q.front();
+            // Standard BFS traversal
+            while (!q.empty())
+            {
+                int u = q.front();
                 q.pop();
 
-                for(auto [v,w]:adj[u]){
-
-                    if(!visited[v]){
-                        visited[v]=true;
+                for (auto [v, w] : adj[u])
+                {
+                    if (!visited[v])
+                    {
+                        visited[v] = true;
                         q.push(v);
                     }
                 }
@@ -48,8 +74,29 @@ int Graph::connectedComponents(){
         }
     }
 
+    /*
+        RETURN VALUE:
+        -------------
+        cnt = number of connected components
+
+        - If ignoreIsolated = false:
+            counts ALL components including isolated vertices
+
+        - If ignoreIsolated = true:
+            ignores isolated vertices and counts only meaningful components
+            for Eulerian checking
+    */
     return cnt;
 }
+
+
+
+
+
+
+
+
+
 
 /*
 Cycle Detection in Undirected Graph

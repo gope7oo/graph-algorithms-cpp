@@ -135,26 +135,34 @@ Theory:
 - An Eulerian Path exists if we can traverse every edge exactly once (may start and end at different vertices).
 */
 
-int Graph::isEulerian() {
-    if (V == 0) return 0;
+int Graph::isEulerian()
+{
+    if (V == 0)
+        return 0;
 
-    if (directed) return isEulerianDirected();
+    // connectivity check (ignore isolated vertices)
+    if (connectedComponents(true) != 1)
+        return 0;
 
-    // for undirected 
-
-    int oddDegreeCount = 0;
-    for (int i = 0; i < V; i++) {
-        if (degree(i) % 2 != 0) {
-            oddDegreeCount++;
-        }
+    if (directed) {
+        return isEulerianDirected();
     }
 
-    if (oddDegreeCount == 0) {
-        return 1; // eulerian circuit
-    } else if (oddDegreeCount == 2) return 2; // eulerian path
-    else {
-        return 0; // no eulerian path or circle
+    int odd = 0;
+
+    for (int i = 0; i < V; i++)
+    {
+        if (degree(i) % 2 != 0)
+            odd++;
     }
+
+    if (odd == 0)
+        return 1; // Eulerian circuit
+
+    if (odd == 2)
+        return 2; // Eulerian path
+
+    return 0;
 }
 
 bool Graph::isSemiEulerian() {
@@ -166,29 +174,48 @@ For Directed Graphs:
 - Eulerian Circuit → Every vertex has equal in-degree and out-degree.
 - Eulerian Path → Exactly one vertex has out = in + 1 (start), one has in = out + 1 (end), and all others are equal.
 */
-int Graph::isEulerianDirected() {
-    if (V == 0) return 0;
+int Graph::isEulerianDirected()
+{
+    if (V == 0)
+        return 0;
+
+    // connectivity check (still using your BFS-based function)
+    if (connectedComponents(true) != 1)
+        return 0;
 
     vector<int> in(V, 0), out(V, 0);
 
-    // calculate indegree and outdegree for each v
-    for (int u = 0; u < V; u++) {
-        out[u] = degree(u); 
-        for (auto& edge : adj[u]) {
-            in[edge.first]++;
+    for (int u = 0; u < V; u++)
+    {
+        out[u] = adj[u].size();
+
+        for (auto [v, w] : adj[u])
+        {
+            in[v]++;
         }
     }
 
-    int startCount = 0, endCount = 0, balanced = 0;
+    int start = 0, end = 0;
 
-    for (int i = 0; i < V; i++) {
-        if (in[i] == out[i]) balanced++;
-        else if (out[i] == in[i] + 1) startCount++; // potential starting vertex
-        else if (in[i] == out[i] + 1) endCount++; //potential ending vertex
-        else return 0; // impossible if diff > 1 
+    for (int i = 0; i < V; i++)
+    {
+        if (in[i] == out[i])
+            continue;
+
+        if (out[i] == in[i] + 1)
+            start++;
+        else if (in[i] == out[i] + 1)
+            end++;
+        else
+            return 0;
     }
 
-    if (balanced == V) return 1; //eulerian circuit
-    if (startCount == 1 && endCount == 1) return 2; // eulerian path
+    if (start == 0 && end == 0)
+        return 1; // Eulerian circuit
+
+    if (start == 1 && end == 1)
+        return 2; // Eulerian path
+
     return 0;
 }
+// test
