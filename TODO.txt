@@ -1,0 +1,25 @@
+done:
+dfs
+bfs
+dfs recursive
+Dijkstra
+bellmanford
+floydwarshall
+Kruskal
+dsu (find unite)
+connected components algo
+dfs cycle in undirected
+bipartite graph check
+kosaraju 
+tarjans
+
+to do: 
+prims algorithm 
+check degree of a node
+detect cycle in directed graph
+check for isomorphism in two graphs (bijection)
+check for eulerian / semieulerian graph
+check for Hamiltonian graph
+check if a graph is planar or not
+vertex and edge cover
+A* algo

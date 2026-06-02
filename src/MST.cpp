@@ -1,5 +1,6 @@
 #include "../include/Graph.h"
 
+
 /*
 Kruskal's Minimum Spanning Tree Algorithm
 
@@ -51,5 +52,64 @@ long long Graph::kruskalMST(){
         }
     }
 
+    return cost;
+}
+
+
+vector<tuple<int, int, int>> Graph::primMST() {
+    if (V == 0) return {};
+
+    vector<bool> inMST(V, false); 
+    vector<int> key(V, INT_MAX);
+    vector<int> parent(V, -1);
+
+    // Min-heap: {key, vertex}
+    std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<>> pq;
+
+    key[0] = 0;
+    pq.push({0, 0});
+
+    std::vector<std::tuple<int, int, int>> mstEdges;
+
+    while (!pq.empty()) {
+        int u = pq.top().second;
+        pq.pop();
+
+        if (inMST[u]) continue;
+        inMST[u] = true;
+
+        // Add edge to MST (except for first vertex)
+        if (parent[u] != -1) {
+            // Find weight between parent[u] and u
+            for (auto& edge : adj[parent[u]]) {
+                if (edge.first == u) {
+                    mstEdges.emplace_back(parent[u], u, edge.second);
+                    break;
+                }
+            }
+        }
+
+        for (auto& edge : adj[u]) {
+            int v = edge.first;
+            int weight = edge.second;
+
+            if (!inMST[v] && weight < key[v]) {
+                key[v] = weight;
+                parent[v] = u;
+                pq.push({key[v], v});
+            }
+        }
+    }
+
+    return mstEdges;
+}
+
+long long Graph::primMSTCost() {
+    auto edges = primMST();
+    long long cost = 0;
+
+    for (auto& [u, v, w] : edges) {
+        cost += w;
+    }
     return cost;
 }

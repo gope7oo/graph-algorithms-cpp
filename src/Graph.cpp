@@ -41,3 +41,34 @@ bool Graph::DSU::unite(int x,int y){
 
     return true;
 }
+
+int Graph::degree(int v) {
+    if (v < 0 || v >= V) {
+        std::cerr << "Error: Vertex " << v << " is out of bounds.\n";
+        return -1;
+    }
+    return adj[v].size();
+}
+
+int Graph::outDegree(int v) {
+    return degree(v);
+}
+
+int Graph::inDegree(int v) {
+    if (v < 0 || v >= V) {
+        std::cerr << "Error: Vertex " << v << " is out of bounds.\n";
+        return -1;
+    }
+
+    if (!directed) return degree(v); // undirected
+
+    int cnt = 0;
+    for (int u = 0; u < V; u++){
+        for (auto& edge : adj[u]) {
+            if (edge.first == v) {
+                cnt++;
+            }
+        }
+    }
+    return cnt; 
+}

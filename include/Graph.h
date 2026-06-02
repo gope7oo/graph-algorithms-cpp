@@ -109,6 +109,11 @@ public:
 
     void printGraph();
 
+    
+    int degree(int v); // for undirected
+    int inDegree(int v); // for directed coming in a vertex
+    int outDegree(int v);  // for directed coming out a vertex
+
     // Traversal
     void bfs(int start);
     void DFS(int start);
@@ -131,6 +136,8 @@ public:
 
     // MST
     long long kruskalMST();
+    vector<tuple<int, int, int>> primMST(); // {u -> v, weight}
+    long long primMSTCost(); // total cost 
 
     // SCC
     vector<vector<int>> kosarajuSCC();
