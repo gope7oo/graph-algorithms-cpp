@@ -119,6 +119,10 @@ public:
     int minVertexCoverSize();
     int minEdgeCoverSize();
 
+    bool isIsomorphic(Graph& other);   
+    bool isIsomorphicUtil(int pos, vector<int>& mapping, vector<bool>& used, Graph& other);
+    bool checkMapping(vector<int>& mapping, Graph& other);
+
     // Traversal
     void bfs(int start);
     void DFS(int start);
