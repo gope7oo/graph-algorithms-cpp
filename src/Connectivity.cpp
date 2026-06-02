@@ -96,6 +96,51 @@ bool Graph::hasCycleUndirected(){
     return false;
 }
 
+// ====================== Cycle Detection in Directed Graph ======================
+
+bool Graph::hasCycleDirected() {
+    if (!directed) {
+        std::cerr << "Warning: hasCycleDirected() called on undirected graph.\n";
+        return false;
+    }
+
+    std::vector<int> visited(V, 0);    // 0 = not visited, 1 = visiting, 2 = visited
+    std::vector<int> recStack(V, 0);   // Recursion stack
+
+    for (int i = 0; i < V; i++) {
+        if (visited[i] == 0) {
+            if (dfsCycleUtil(i, visited, recStack)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+// Private helper function
+bool Graph::dfsCycleUtil(int v, std::vector<int>& visited, std::vector<int>& recStack) {
+    visited[v] = 1;   // Currently visiting
+    recStack[v] = 1;  // Add to recursion stack
+
+    for (auto& edge : adj[v]) {
+        int u = edge.first;
+
+        if (recStack[u] == 1) {
+            return true;  // Cycle found
+        }
+
+        if (visited[u] == 0) {
+            if (dfsCycleUtil(u, visited, recStack)) {
+                return true;
+            }
+        }
+    }
+
+    visited[v] = 2;   // Fully visited
+    recStack[v] = 0;  // Remove from recursion stack
+    return false;
+}
+
 
 /*
 Bipartite Graph Check

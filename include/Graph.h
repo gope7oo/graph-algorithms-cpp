@@ -122,6 +122,8 @@ public:
     // Connectivity
     int connectedComponents();
     bool hasCycleUndirected();
+    bool hasCycleDirected(); 
+    bool dfsCycleUtil(int, vector<int>& visited, vector<int>& recStack);
     bool isBipartite();
 
     pair<vector<pair<int,int>>,vector<int>> findBridgesArt();
