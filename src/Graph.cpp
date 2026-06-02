@@ -72,3 +72,129 @@ int Graph::inDegree(int v) {
     }
     return cnt; 
 }
+
+
+
+// ====================== Vertex Cover & Edge Cover ======================
+/*
+Theory:
+Detailed Approach (Greedy):
+1. Sort all vertices in decreasing order of their degree.
+2. Pick the vertex with highest degree.
+3. Add it to the cover.
+4. All edges connected to this vertex are now considered "covered".
+5. Repeat until no uncovered edges remain.
+
+Advantage: Simple and fast.
+Disadvantage: Not always optimal (can be up to 2x larger than minimum in worst case).
+
+
+Note: Finding the *minimum* Vertex Cover is NP-Hard. 
+      We use a simple Greedy approach here (good enough for learning & many practical cases).
+*/
+
+
+vector<int> Graph::vertexCover()
+{
+    if (V == 0) return {};
+
+    // mark uncovered edges
+    vector<vector<bool>> edgeUsed(V, vector<bool>(V, false));
+
+    for (int u = 0; u < V; u++)
+    {
+        for (auto [v, w] : adj[u])
+        {
+            edgeUsed[u][v] = true;
+        }
+    }
+
+    vector<bool> inCover(V, false);
+    vector<int> cover;
+
+    // Greedy: keep picking vertex with most uncovered edges
+    while (true)
+    {
+        int bestV = -1;
+        int bestCount = 0;
+
+        for (int i = 0; i < V; i++)
+        {
+            if (inCover[i]) continue;
+
+            int cnt = 0;
+            for (auto [v, w] : adj[i])
+            {
+                if (edgeUsed[i][v])
+                    cnt++;
+            }
+
+            if (cnt > bestCount)
+            {
+                bestCount = cnt;
+                bestV = i;
+            }
+        }
+
+        // no uncovered edges left
+        if (bestCount == 0)
+            break;
+
+        // add best vertex to cover
+        inCover[bestV] = true;
+        cover.push_back(bestV);
+
+        // mark all its edges as covered
+        for (auto [v, w] : adj[bestV])
+        {
+            edgeUsed[bestV][v] = false;
+        }
+    }
+
+    return cover;
+}
+int Graph::minVertexCoverSize() {
+    return vertexCover().size();
+}
+
+// ====================== Edge Cover ======================
+/*
+Detailed Approach (Greedy):
+1. Iterate through all vertices.
+2. If a vertex is not covered yet, find an edge connected to it.
+3. Prefer edges that cover two uncovered vertices at once.
+4. Add that edge to the cover and mark both endpoints as covered.
+5. Repeat until all vertices with degree > 0 are covered.
+
+Note: Isolated vertices (degree 0) cannot be covered.
+*/
+
+vector<pair<int,int>> Graph::edgeCover()
+{
+    if (V == 0) return {};
+
+    vector<bool> covered(V, false);
+    vector<pair<int,int>> coverEdges;
+
+    for (int u = 0; u < V; u++)
+    {
+        if (covered[u]) continue;
+
+        for (auto [v, w] : adj[u])
+        {
+            if (!covered[v])
+            {
+                coverEdges.emplace_back(u, v);
+                covered[u] = true;
+                covered[v] = true;
+                break;
+            }
+        }
+    }
+
+    return coverEdges;
+}
+
+int Graph::minEdgeCoverSize() {
+    return edgeCover().size();
+}

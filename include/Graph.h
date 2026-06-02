@@ -114,6 +114,11 @@ public:
     int inDegree(int v); // for directed coming in a vertex
     int outDegree(int v);  // for directed coming out a vertex
 
+    vector<int> vertexCover();
+    vector<pair<int, int>> edgeCover();
+    int minVertexCoverSize();
+    int minEdgeCoverSize();
+
     // Traversal
     void bfs(int start);
     void DFS(int start);
