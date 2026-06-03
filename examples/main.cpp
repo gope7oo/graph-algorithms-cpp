@@ -1,5 +1,8 @@
 #include "../include/Graph.h"
 
 int main(){
-    return 0;
+    // g++ examples/main.cpp src/*.cpp -Iinclude -std=c++17 -o graph
+    // ./graph
+   
+     
 }
