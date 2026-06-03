@@ -64,22 +64,49 @@ Time Complexity:
     O(V * E)
 */
 
-vector<long long> Graph::bellmanFord(int src){
+vector<long long> Graph::bellmanFord(int src)
+{
+    if (src < 0 || src >= V) {
+        cerr << "Invalid source vertex.\n";
+        return {};
+    }
 
-    vector<long long> dist(V,LLONG_MAX/2);
-    dist[src]=0;
+    vector<long long> dist(V, LLONG_MAX / 2);
+    dist[src] = 0;
 
-    for(int i=0;i<V-1;i++){
+    // Relax all edges V-1 times
+    for (int i = 0; i < V - 1; i++)
+    {
+        bool updated = false;
 
-        for(int u=0;u<V;u++){
-
-            for(auto [v,w]:adj[u]){
-
-                if(dist[u]!=LLONG_MAX/2 &&
-                   dist[v] > dist[u]+w){
-
-                    dist[v]=dist[u]+w;
+        for (int u = 0; u < V; u++)
+        {
+            for (auto [v, w] : adj[u])
+            {
+                if (dist[u] != LLONG_MAX / 2 &&
+                    dist[v] > dist[u] + w)
+                {
+                    dist[v] = dist[u] + w;
+                    updated = true;
                 }
+            }
+        }
+
+        // Optimization: stop early if no updates
+        if (!updated)
+            break;
+    }
+
+    // Negative cycle detection
+    for (int u = 0; u < V; u++)
+    {
+        for (auto [v, w] : adj[u])
+        {
+            if (dist[u] != LLONG_MAX / 2 &&
+                dist[v] > dist[u] + w)
+            {
+                cerr << "Negative weight cycle detected.\n";
+                return {};
             }
         }
     }
